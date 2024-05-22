@@ -1,11 +1,21 @@
 import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Logo from "./assets/logo.png";
-import Profile from "./assets/profile.jpg";
-import Notif from "./assets/notif-btn.png";
+import Profile from "./assets/profile.png";
 
 function Navigation() {
-  const [showNotification, setShowNotification] = useState(false);
-  const [showProfileOptions, setShowProfileOptions] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Only render the navigation if the current path is not /login
+  if (location.pathname === "/login") {
+    return null;
+  }
+
+  const handleSignOut = () => {
+    localStorage.clear(); // Menghapus semua item dari local storage
+    navigate("/login");
+  };
 
   return (
     <nav className="flex justify-between items-center bg-white p-4 shadow-lg">
@@ -17,51 +27,24 @@ function Navigation() {
         </a>
       </div>
       <div className="flex items-center">
-        <div
-          className="relative mr-4"
-          onMouseEnter={() => setShowNotification(true)}
-          onMouseLeave={() => setShowNotification(false)}
-        >
-          <button className="text-black">
-            <img src={Notif} className="h-5 mt-1"></img>
-          </button>
-          {showNotification && (
-            <div
-              className="absolute right-0 mt-2 bg-white p-2 rounded shadow-md"
-              onMouseEnter={() => setShowNotification(true)}
-              onMouseLeave={() => setShowNotification(false)}
-              style={{ width: "150px", wordWrap: "break-word" }}
-            >
-              Notification 1
-              <br />
-              Notification 2
-            </div>
-          )}
-        </div>
-        <div className="h-8 border-l border-gray-300 mr-7 ml-2" />
-        <div
-          className="relative"
-          onMouseEnter={() => setShowProfileOptions(true)}
-          onMouseLeave={() => setShowProfileOptions(false)}
-        >
+        <div className="" />
+        <div className="flex items-center">
           <button className="flex items-center text-black">
-            <img src={Profile} className="h-8 w-8 rounded-full mr-2" />
-            <span className="mr-5">SenaTzy</span>
+            <img
+              src={Profile}
+              className="h-8 w-8 rounded-full mr-2"
+              alt="Profile"
+            />
+            <span className="mr-4">Admin Mode</span>
           </button>
-          {showProfileOptions && (
-            <div
-              className="absolute right-0 mt-2 bg-white p-2 rounded shadow-md"
-              onMouseEnter={() => setShowProfileOptions(true)}
-              onMouseLeave={() => setShowProfileOptions(false)}
+          <div className="border-l border-gray-300">
+            <button
+              className=" ml-5 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-300"
+              onClick={handleSignOut}
             >
-              <button className="block w-full text-left hover:bg-gray-200 p-1 mr-20">
-                Edit Profile
-              </button>
-              <button className="block w-full text-left hover:bg-gray-200 p-1 mr-20">
-                Sign Out
-              </button>
-            </div>
-          )}
+              Sign Out
+            </button>
+          </div>
         </div>
       </div>
     </nav>

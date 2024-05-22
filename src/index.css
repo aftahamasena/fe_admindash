@@ -14,10 +14,3 @@ code {
     monospace;
 }
 
-.active {
-  background-color: #4a5568; 
-}
-
-.active:hover {
-  background-color: #2d3748; 
-}
