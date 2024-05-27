@@ -18,9 +18,9 @@ class Buku extends Component {
       harga_buku: "",
       action: "",
       search: "",
-      sortField: "id",
-      sortOrder: "asc",
       showModal: false,
+      sortBy: "",
+      sortOrder: "asc",
     };
   }
 
@@ -176,45 +176,66 @@ class Buku extends Component {
       });
   };
 
-  sortBukus = (field) => {
-    const { bukus, sortOrder } = this.state;
-    const sortedBukus = bukus.sort((a, b) => {
-      if (a[field] < b[field]) {
-        return sortOrder === "asc" ? -1 : 1;
-      }
-      if (a[field] > b[field]) {
-        return sortOrder === "asc" ? 1 : -1;
-      }
-      return 0;
-    });
-    this.setState({
-      bukus: sortedBukus,
-      sortField: field,
-      sortOrder: sortOrder === "asc" ? "desc" : "asc",
-    });
-  };
-
-    handleSortByChange = (event) => {
-    this.setState({ sortField: event.target.value }, () => {
-      this.getBukus(); // Panggil getBukus untuk mengambil data dengan sorting baru
-    });
-  };
-
   componentDidMount() {
     this.getBukus();
   }
 
+  handleSortBy = (event) => {
+    this.setState({ sortBy: event.target.value });
+  };
+
+  handleSortOrder = () => {
+    this.setState((prevState) => ({
+      sortOrder: prevState.sortOrder === "asc" ? "desc" : "asc",
+    }));
+  };
+
+  sortBukus = (a, b) => {
+    let comparison = 0;
+    switch (this.state.sortBy) {
+      case "id":
+        comparison = a.id - b.id;
+        break;
+      case "isbn":
+        comparison = a.isbn.localeCompare(b.isbn);
+        break;
+      case "nama_buku":
+        comparison = a.nama_buku.localeCompare(b.nama_buku);
+        break;
+      case "author_buku":
+        comparison = a.author_buku.localeCompare(b.author_buku);
+        break;
+      case "penerbit_buku":
+        comparison = a.penerbit_buku.localeCompare(b.penerbit_buku);
+        break;
+      case "kategori_buku":
+        comparison = a.kategori_buku.localeCompare(b.kategori_buku);
+        break;
+      case "stok_buku":
+        comparison = a.stok_buku.localeCompare(b.stok_buku);
+        break;
+      case "harga_buku":
+        comparison = a.harga_buku.localeCompare(b.harga_buku);
+        break;
+      default:
+        break;
+    }
+    return this.state.sortOrder === "asc" ? comparison : -comparison;
+  };
+
   render() {
+    const sortedBukus = [...this.state.bukus].sort(this.sortBukus);
+
     return (
       <div className="m-3 card text-sm">
         <div className="card-header bg-info text-white">Data Buku</div>
         <div className="card-body">
-        <div className="mb-4">
+          <div className="mb-4">
             <h2 className="text-xl font-bold text-gray-800 mb-1">
-              Users Administration
+              Administrasi Buku
             </h2>
             <p className="text-sm text-gray-500 mb-2">
-              Tabel daftar dan CRUD data user
+              Tabel daftar dan CRUD data buku
             </p>
           </div>
           <div className="flex justify-between mb-2">
@@ -239,244 +260,201 @@ class Buku extends Component {
               Tambah Data
             </button>
           </div>
+          <div className="flex justify-start mb-2">
+            <span className="mr-2">Sort by:</span>
+            <select
+              value={this.state.sortBy}
+              onChange={this.handleSortBy}
+              className="form-control border rounded-2xl pl-3"
+            >
+              <option value="">None</option>
+              <option value="id">ID</option>
+              <option value="isbn">ISBN</option>
+              <option value="nama_buku">Nama Buku</option>
+              <option value="author_buku">Author</option>
+              <option value="penerbit_buku">Penerbit</option>
+              <option value="kategori_buku">Kategori</option>
+              <option value="stok_buku">Stok</option>
+              <option value="harga_buku">Harga</option>
+            </select>
+            <button
+              onClick={this.handleSortOrder}
+              className="ml-2 text-blue-500 font-bold focus:outline-none"
+            >
+              {this.state.sortOrder === "asc" ? "▲" : "▼"}
+            </button>
+          </div>
           <table className="table-auto w-full">
             <thead>
               <tr className="bg-blue-700 text-white">
-                <th className="border px-4 py-2 text-left">
-                  <button onClick={() => this.sortBukus("id")}>ID</button>
-                </th>
-                <th className="border px-4 py-2 text-left">
-                  <button onClick={() => this.sortBukus("isbn")}>ISBN</button>
-                </th>
-                <th className="border px-4 py-2 text-left">
-                  <button onClick={() => this.sortBukus("nama_buku")}>
-                    Nama Buku
-                  </button>
-                </th>
-                <th className="border px-4 py-2 text-left">
-                  <button onClick={() => this.sortBukus("author_buku")}>
-                    Author
-                  </button>
-                </th>
-                <th className="border px-4 py-2 text-left">
-                  <button onClick={() => this.sortBukus("penerbit_buku")}>
-                    Penerbit
-                  </button>
-                </th>
-                <th className="border px-4 py-2 text-left">
-                  <button onClick={() => this.sortBukus("kategori_buku")}>
-                    Kategori
-                  </button>
-                </th>
+                <th className="border px-4 py-2 text-left">ID</th>
+                <th className="border px-4 py-2 text-left">ISBN</th>
+                <th className="border px-4 py-2 text-left">Nama Buku</th>
+                <th className="border px-4 py-2 text-left">Author</th>
+                <th className="border px-4 py-2 text-left">Penerbit</th>
+                <th className="border px-4 py-2 text-left">Kategori</th>
                 <th className="border px-4 py-2 text-left">Deskripsi</th>
                 <th className="border px-4 py-2 text-left">Cover</th>
-                <th className="border px-4 py-2 text-left">
-                  <button onClick={() => this.sortBukus("stok_buku")}>Stok</button>
-                </th>
-                <th className="border px-4 py-2 text-left">
-                  <button onClick={() => this.sortBukus("harga_buku")}>Harga</button>
-                </th>
+                <th className="border px-4 py-2 text-left">Stok</th>
+                <th className="border px-4 py-2 text-left">Harga</th>
                 <th className="border px-4 py-2 text-left">Option</th>
               </tr>
             </thead>
             <tbody>
-              {this.state.bukus &&
-                this.state.bukus.map((buku, index) => (
-                  <tr
-                    key={index}
-                    className={index % 2 === 0 ? "bg-gray-100" : ""}
-                  >
-                    <td className="border px-4 py-2">{buku.id}</td>
-                    <td className="border px-4 py-2">{buku.isbn}</td>
-                    <td className="border px-4 py-2">{buku.nama_buku}</td>
-                    <td className="border px-4 py-2">{buku.author_buku}</td>
-                    <td className="border px-4 py-2">{buku.penerbit_buku}</td>
-                    <td className="border px-4 py-2">{buku.kategori_buku}</td>
-                    <td className="border px-4 py-2">{buku.deskripsi_buku}</td>
-                    <td className="border px-4 py-2">{buku.cover_buku}</td>
-                    <td className="border px-4 py-2">{buku.stok_buku}</td>
-                    <td className="border px-4 py-2">{buku.harga_buku}</td>
-                    <td className="border px-4 py-2">
-                      <button
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mr-2"
-                        onClick={() => this.Edit(buku)}
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full"
-                        onClick={() => this.Drop(buku.id)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+              {sortedBukus.map((buku, index) => (
+                <tr
+                  key={index}
+                  className={index % 2 === 0 ? "bg-gray-100" : ""}
+                >
+                  <td className="border px-4 py-2">{buku.id}</td>
+                  <td className="border px-4 py-2">{buku.isbn}</td>
+                  <td className="border px-4 py-2">{buku.nama_buku}</td>
+                  <td className="border px-4 py-2">{buku.author_buku}</td>
+                  <td className="border px-4 py-2">{buku.penerbit_buku}</td>
+                  <td className="border px-4 py-2">{buku.kategori_buku}</td>
+                  <td className="border px-4 py-2">{buku.deskripsi_buku}</td>
+                  <td className="border px-4 py-2">{buku.cover_buku}</td>
+                  <td className="border px-4 py-2">{buku.stok_buku}</td>
+                  <td className="border px-4 py-2">{buku.harga_buku}</td>
+                  <td className="border px-4 py-2">
+                    <button
+                      className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full mr-2 mb-1 px-6"
+                      onClick={() => this.Edit(buku)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full"
+                      onClick={() => this.Drop(buku.id)}
+                    >
+                      Hapus
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
+
           {this.state.showModal && (
-            <div className="fixed z-10 inset-0 overflow-y-auto">
-              <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div
-                  className="fixed inset-0 transition-opacity"
-                  aria-hidden="true"
-                >
-                  <div className="absolute inset-0 bg-black opacity-60"></div>
-                </div>
-
-                <span
-                  className="hidden sm:inline-block sm:align-middle sm:h-screen"
-                  aria-hidden="true"
-                >
-                  &#8203;
-                </span>
-
-                <div
-                  className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6"
-                  role="dialog"
-                  aria-modal="true"
-                  aria-labelledby="modal-headline"
-                >
-                  <form onSubmit={this.SaveBuku}>
-                    <div>
-                      <h2 className="text-center font-semibold text-2xl mb-4">
-                        Form Buku
-                      </h2>
-
-                      <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                          ISBN
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border rounded-2xl pl-3"
-                          name="isbn"
-                          value={this.state.isbn}
-                          onChange={this.bind}
-                          required
-                        />
-                      </div>
-                      <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                          Nama Buku
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border rounded-2xl pl-3"
-                          name="nama_buku"
-                          value={this.state.nama_buku}
-                          onChange={this.bind}
-                          required
-                        />
-                      </div>
-                      <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                          Author
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border rounded-2xl pl-3"
-                          name="author_buku"
-                          value={this.state.author_buku}
-                          onChange={this.bind}
-                          required
-                        />
-                      </div>
-                      <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                          Penerbit
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border rounded-2xl pl-3"
-                          name="penerbit_buku"
-                          value={this.state.penerbit_buku}
-                          onChange={this.bind}
-                          required
-                        />
-                      </div>
-                      <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                          Kategori
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border rounded-2xl pl-3"
-                          name="kategori_buku"
-                          value={this.state.kategori_buku}
-                          onChange={this.bind}
-                          required
-                        />
-                      </div>
-                      <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                          Deskripsi
-                        </label>
-                        <textarea
-                          className="form-control border rounded-2xl pl-3"
-                          name="deskripsi_buku"
-                          value={this.state.deskripsi_buku}
-                          onChange={this.bind}
-                          required
-                        ></textarea>
-                      </div>
-                      <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                          Cover
-                        </label>
-                        <input
-                          type="file"
-                          className="form-control border rounded-2xl pl-3"
-                          name="cover_buku"
-                          onChange={this.bind}
-                          required
-                        />
-                      </div>
-                      <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                          Stok
-                        </label>
-                        <input
-                          type="number"
-                          className="form-control border rounded-2xl pl-3"
-                          name="stok_buku"
-                          value={this.state.stok_buku}
-                          onChange={this.bind}
-                          required
-                        />
-                      </div>
-                      <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                          Harga
-                        </label>
-                        <input
-                          type="number"
-                          className="form-control border rounded-2xl pl-3"
-                          name="harga_buku"
-                          value={this.state.harga_buku}
-                          onChange={this.bind}
-                          required
-                        />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <button
-                          type="submit"
-                          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-                        >
-                          Simpan
-                        </button>
-                        <button
-                          type="button"
-                          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full"
-                          onClick={() => this.setState({ showModal: false })}
-                        >
-                          Batal
-                        </button>
-                      </div>
-                    </div>
-                  </form>
-                </div>
+            <div
+              className="modal fixed inset-0 flex items-center justify-center z-50"
+              style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+            >
+              <div className="modal-content bg-white w-1/2 p-5 rounded-xl">
+                <h5 className="modal-title text-lg font-bold mb-3">
+                  Form Buku
+                </h5>
+                <form onSubmit={this.SaveBuku}>
+                  <div className="form-group mb-3">
+                    <label>ISBN</label>
+                    <input
+                      type="text"
+                      className="form-control border rounded-lg pl-3 py-1 w-full"
+                      name="isbn"
+                      value={this.state.isbn}
+                      onChange={this.bind}
+                      required
+                    />
+                  </div>
+                  <div className="form-group mb-3">
+                    <label>Nama Buku</label>
+                    <input
+                      type="text"
+                      className="form-control border rounded-lg pl-3 py-1 w-full"
+                      name="nama_buku"
+                      value={this.state.nama_buku}
+                      onChange={this.bind}
+                      required
+                    />
+                  </div>
+                  <div className="form-group mb-3">
+                    <label>Author</label>
+                    <input
+                      type="text"
+                      className="form-control border rounded-lg pl-3 py-1 w-full"
+                      name="author_buku"
+                      value={this.state.author_buku}
+                      onChange={this.bind}
+                      required
+                    />
+                  </div>
+                  <div className="form-group mb-3">
+                    <label>Penerbit</label>
+                    <input
+                      type="text"
+                      className="form-control border rounded-lg pl-3 py-1 w-full"
+                      name="penerbit_buku"
+                      value={this.state.penerbit_buku}
+                      onChange={this.bind}
+                      required
+                    />
+                  </div>
+                  <div className="form-group mb-3">
+                    <label>Kategori</label>
+                    <input
+                      type="text"
+                      className="form-control border rounded-lg pl-3 py-1 w-full"
+                      name="kategori_buku"
+                      value={this.state.kategori_buku}
+                      onChange={this.bind}
+                      required
+                    />
+                  </div>
+                  <div className="form-group mb-3">
+                    <label>Deskripsi</label>
+                    <textarea
+                      className="form-control border rounded-lg pl-3 py-1 w-full"
+                      name="deskripsi_buku"
+                      value={this.state.deskripsi_buku}
+                      onChange={this.bind}
+                      required
+                    ></textarea>
+                  </div>
+                  <div className="form-group mb-3">
+                    <label>Cover</label>
+                    <input
+                      type="file"
+                      className="form-control"
+                      name="cover_buku"
+                      onChange={this.bind}
+                    />
+                  </div>
+                  <div className="form-group mb-3">
+                    <label>Stok</label>
+                    <input
+                      type="number"
+                      className="form-control border rounded-lg pl-3 py-1 w-full"
+                      name="stok_buku"
+                      value={this.state.stok_buku}
+                      onChange={this.bind}
+                      required
+                    />
+                  </div>
+                  <div className="form-group mb-3">
+                    <label>Harga</label>
+                    <input
+                      type="number"
+                      className="form-control border rounded-lg pl-3 py-1 w-full"
+                      name="harga_buku"
+                      value={this.state.harga_buku}
+                      onChange={this.bind}
+                      required
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mr-2"
+                  >
+                    Simpan
+                  </button>
+                  <button
+                    type="button"
+                    className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded-full"
+                    onClick={() => this.setState({ showModal: false })}
+                  >
+                    Batal
+                  </button>
+                </form>
               </div>
             </div>
           )}

@@ -52,9 +52,7 @@ class carts extends Component {
             <h2 className="text-xl font-bold text-gray-800 mb-1">
               Administrasi Buku
             </h2>
-            <p className="text-sm text-gray-500 mb-2">
-              Tabel daftar data Buku
-            </p>
+            <p className="text-sm text-gray-500 mb-2">Tabel daftar data Buku</p>
           </div>
           <table className="table-auto w-full mb-4">
             <thead>
@@ -73,34 +71,12 @@ class carts extends Component {
                 cartsDetails.length > 0 ? (
                   cartsDetails.map((detail, index) => (
                     <tr key={index}>
-                      {index === 0 && (
-                        <>
-                          <td
-                            className="border px-4 py-2"
-                            rowSpan={cartsDetails.length}
-                          >
-                            {carts.id}
-                          </td>
-                          <td
-                            className="border px-4 py-2"
-                            rowSpan={cartsDetails.length}
-                          >
-                            {carts.id_user}
-                          </td>
-                          <td
-                            className="border px-4 py-2"
-                            rowSpan={cartsDetails.length}
-                          >
-                            {carts.total_transaksi}
-                          </td>
-                          <td
-                            className="border px-4 py-2"
-                            rowSpan={cartsDetails.length}
-                          >
-                            {carts.status}
-                          </td>
-                        </>
-                      )}
+                      <td className="border px-4 py-2">{carts.id}</td>
+                      <td className="border px-4 py-2">{carts.id_user}</td>
+                      <td className="border px-4 py-2">
+                        {carts.total_transaksi}
+                      </td>
+                      <td className="border px-4 py-2">{carts.status}</td>
                       <td className="border px-4 py-2">{detail.id_buku}</td>
                       <td className="border px-4 py-2">{detail.qty}</td>
                       <td className="border px-4 py-2">{detail.total}</td>

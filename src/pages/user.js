@@ -209,7 +209,7 @@ class User extends Component {
         <div className="card-body">
           <div className="mb-4">
             <h2 className="text-xl font-bold text-gray-800 mb-1">
-              Users Administration
+              Administasi User
             </h2>
             <p className="text-sm text-gray-500 mb-2">
               Tabel daftar dan CRUD data user
